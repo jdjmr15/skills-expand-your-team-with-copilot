@@ -190,6 +190,19 @@ section h3 {
   justify-content: center;
 }
 
+.activity-sharing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.activity-sharing a {
+  color: var(--primary);
+  font-weight: bold;
+}
+
 /* Activity Tag */
 .activity-tag {
   position: absolute;
