@@ -41,6 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentDay = "";
   let currentTimeRange = "";
 
+  const sharedActivity = new URLSearchParams(window.location.search).get("activity");
+  if (sharedActivity) {
+    searchInput.value = sharedActivity;
+    searchQuery = sharedActivity;
+  }
+
   // Authentication state
   let currentUser = null;
 
@@ -474,6 +480,53 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function addSharingLinks(activityCard, name) {
+    const activityUrl = new URL(window.location.pathname, window.location.origin);
+    activityUrl.searchParams.set("activity", name);
+    const shareText = `Check out ${name} at Mergington High School!`;
+    const destinations = [
+      {
+        label: "WhatsApp",
+        url: "https://wa.me/",
+        params: { text: `${shareText} ${activityUrl.href}` },
+      },
+      {
+        label: "Facebook",
+        url: "https://www.facebook.com/sharer/sharer.php",
+        params: { u: activityUrl.href },
+      },
+      {
+        label: "X",
+        url: "https://twitter.com/intent/tweet",
+        params: { text: shareText, url: activityUrl.href },
+      },
+    ];
+
+    const sharing = document.createElement("div");
+    sharing.className = "activity-sharing";
+    sharing.setAttribute("aria-label", `Share ${name}`);
+
+    const label = document.createElement("span");
+    label.textContent = "Share:";
+    sharing.appendChild(label);
+
+    destinations.forEach((destination) => {
+      const url = new URL(destination.url);
+      Object.entries(destination.params).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+      });
+      const link = document.createElement("a");
+      link.href = url.href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = destination.label;
+      link.setAttribute("aria-label", `Share ${name} on ${destination.label}`);
+      sharing.appendChild(link);
+    });
+
+    activityCard.appendChild(sharing);
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -589,6 +642,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    addSharingLinks(activityCard, name);
     activitiesList.appendChild(activityCard);
   }
 
